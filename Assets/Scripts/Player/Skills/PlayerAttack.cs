@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
+using NRPG.Save;
 using UnityEngine;
 
 namespace NRPG.Attack
@@ -8,71 +8,148 @@ namespace NRPG.Attack
     {
         [Header("Animator")]
         Animator _anim;
+
+        [Header("CharacterStats")]
+        PlayerStats _stats;
+
         [Header("Fireball")]
-        public GameObject fireball;
+        public GameObject fireballPrefab;
         Transform spawnLocation;
         [SerializeField] float fireballSpeed = 5f;
-        
+        bool canFireball = true;
+
+        [Header("FiraWave")]
+        bool canFirewave=true;
+        public GameObject fireWavePrefab;
+        [SerializeField] float fireWaveSpeed = 5f;
+
+
         [Header("Teleport")]
-        [SerializeField] GameObject teleportEffect; 
+        [SerializeField] GameObject teleportEffect;
+        bool canTeleport = true;
+        CapsuleCollider2D _collider;
+
+        [Header("Cooldown")]
+        float _fireballCooldown;
+        float _fireWaveCooldown;
+        float _teleportCooldown;
 
         private void Awake() 
         {
+            _collider=GetComponent<CapsuleCollider2D>();
             _anim = GetComponent<Animator>();
             spawnLocation = GameObject.Find("FirePosition").GetComponent<Transform>();
+            _stats=GetComponent<PlayerStats>();
+
+            _fireballCooldown=_stats.fireBallCooldown;
+            _fireWaveCooldown=_stats.fireWaveCooldown;
+            _teleportCooldown=_stats.teleportCooldown;
+
         }
 
         // Ateş topu atma işlevi
         public void FireBallAttack()
         {
-            _anim.SetTrigger("attack");
-            StartCoroutine(FireBallSpawner());
+            if (canFireball)
+            {
+                _anim.SetTrigger("attack");
+                StartCoroutine(FireBallSpawner());
+            }
         }
-        bool canTeleport=true;
+        public void FireWaveAttack()
+        {
+            if (canFirewave)
+            {
+                _anim.SetTrigger("attack");
+                StartCoroutine(FireWaveSpawner());
+            }
+        }
+
+
+#region Fireball
+
+        IEnumerator FireBallSpawner()
+        {
+            // Cooldown kontrolü
+            canFireball = false;
+
+            // Mouse pozisyonunu oyun dünyası pozisyonuna dönüştür
+            Vector3 mousePosition = GetMouseWorldPosition();
+
+            // Ateş topunu spawn noktasından başlat
+            GameObject fireball = Instantiate(fireballPrefab, spawnLocation.position, Quaternion.identity);
+
+            // Yön vektörünü hesapla (mouse - başlangıç pozisyonu)
+            Vector2 direction = (mousePosition - spawnLocation.position).normalized;
+
+            // Rigidbody2D ile ateş topuna hız ver
+            Rigidbody2D rb = fireball.GetComponent<Rigidbody2D>();
+            if (rb != null)
+            {
+                rb.velocity = direction * fireballSpeed;
+            }
+
+            // Ateş topunun rotasyonunu fare yönüne göre ayarla
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            fireball.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+            // Cooldown süresi
+            yield return new WaitForSeconds(_fireballCooldown); // Ateş topunu tekrar atabilmek için bekleme süresi
+            canFireball = true;
+        }
+#endregion
+
+#region Teleport
+
         public IEnumerator Teleport()
         {
             if (canTeleport)
             {
-                // Eski pozisyonda bulut şeysini oluştur
-                Instantiate(teleportEffect,transform.position,Quaternion.identity);
-                
-                // Karakteri ışınlanacak konuma götür ve bulut şeysi gönder
-                gameObject.transform.position = GetMouseWorldPosition();
-                Instantiate(teleportEffect,transform.position,Quaternion.identity);
+                // Eski pozisyonda teleport efekti oluştur
+                Instantiate(teleportEffect, transform.position, Quaternion.identity);
+                _collider.enabled = false;
+                // Karakteri yeni konuma ışınla
+                transform.position = GetMouseWorldPosition();
+                _collider.enabled = true;
+                // Yeni pozisyonda teleport efekti oluştur
+                Instantiate(teleportEffect, transform.position, Quaternion.identity);
+
+                // Teleport cooldown
+                canTeleport = false;
+                yield return new WaitForSeconds(_teleportCooldown);
+                canTeleport = true;
             }
-            
-            
-            canTeleport=false;
-            yield return new WaitForSeconds(5);
-            // Tekrar saldırabilir ol
-            canTeleport=true;
         }
-#region Fireball
-        bool canFireball=true;
-        IEnumerator FireBallSpawner()
+#endregion
+#region FireWave
+        IEnumerator FireWaveSpawner()
         {
-            if (canFireball)
+            // Cooldown kontrolü
+            canFirewave = false;
+
+            // Mouse pozisyonunu oyun dünyası pozisyonuna dönüştür
+            Vector3 mousePosition = GetMouseWorldPosition();
+
+            // Ateş topunu spawn noktasından başlat
+            GameObject fireball = Instantiate(fireWavePrefab, spawnLocation.position, Quaternion.identity);
+
+            // Yön vektörünü hesapla (mouse - başlangıç pozisyonu)
+            Vector2 direction = (mousePosition - spawnLocation.position).normalized;
+
+            // Rigidbody2D ile ateş topuna hız ver
+            Rigidbody2D rb = fireball.GetComponent<Rigidbody2D>();
+            if (rb != null)
             {
-                // Mouse pozisyonunu sürekli kullanmak için ayrı bir fonksiyondan al
-                Vector3 mousePosition = GetMouseWorldPosition();
-                
-                // Mermiyi oluştur
-                GameObject projectile = Instantiate(fireball, spawnLocation.position, Quaternion.identity);
-
-                // Yön vektörünü hesapla (mouse - başlangıç pozisyonu)
-                Vector2 direction = (mousePosition - spawnLocation.position).normalized;
-
-                // Mermiyi mouse yönüne doğru hareket ettir
-                projectile.GetComponent<Rigidbody2D>().velocity = direction * fireballSpeed*Time.deltaTime*100;
-
-                // Ateş topunun Z rotasyonunu fare yönüne göre ayarla
-                float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
-                projectile.transform.rotation = Quaternion.Euler(0, 0, angle);
+                rb.velocity = direction * fireWaveSpeed;
             }
 
-            canFireball=false;
-            yield return new WaitForSeconds(0.5f);
-            canFireball=true;
+            // Ateş topunun rotasyonunu fare yönüne göre ayarla
+            float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;
+            fireball.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+            // Cooldown süresi
+            yield return new WaitForSeconds(_fireWaveCooldown); // Ateş topunu tekrar atabilmek için bekleme süresi
+            canFirewave = true;
         }
 #endregion
 

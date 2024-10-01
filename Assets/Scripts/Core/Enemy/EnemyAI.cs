@@ -9,34 +9,42 @@ namespace NRPG.Core
         [Header("Enemy Settings")]
         public float detectionRadius = 10f;  // Oyuncuyu algılama yarıçapı
         public float stopDistance = 1.5f;    // Oyuncuya ne kadar yaklaştığında duracak
-        public Transform player;             // Oyuncunun transform'u
+        Transform _player;             // Oyuncunun transform'u
         public float actionDistance = 1.5f;  // İşlemin tetikleneceği mesafe
         private bool isFacingRight = false; //default olarak karakter sola bakıyor varsayalım
+        bool _isWalking;
+        [SerializeField] string enemyTag;
+
+        [Header("Components")]
         SpriteRenderer _spriteRenderer;
-
-
-
         private NavMeshAgent _navMeshAgent;
-        private EnemyController _enemyController;
         private EnemyAttack _attack;
+        Animator _anim;
+
+        [Header("Can Attack")]
         private bool canAttack = true;
 
         private void Awake()
         {
-            _navMeshAgent = GetComponent<NavMeshAgent>();
-            _enemyController = GetComponent<EnemyController>();
-            _attack = GetComponent<EnemyAttack>();
-            _spriteRenderer=GetComponent<SpriteRenderer>();
+            Components();
 
             _navMeshAgent.updateRotation = false;
             _navMeshAgent.updateUpAxis = false;
+        }
+        void Components()
+        {
+            _player=GameObject.Find("Player").GetComponent<Transform>();
+            _navMeshAgent = GetComponent<NavMeshAgent>();
+            _attack = GetComponent<EnemyAttack>();
+            _spriteRenderer=GetComponent<SpriteRenderer>();
+            _anim = GetComponent<Animator>();
         }
 
         public void EnemyBehavior()
         {
             // Oyuncunun mesafesini kontrol et
-            float distanceToPlayer = Vector3.Distance(player.position, transform.position);
-            FlipPlayer(player.position);
+            float distanceToPlayer = Vector3.Distance(_player.position, transform.position);
+            FlipPlayer(_player.position);
             // Oyuncu belirlenen algılama yarıçapının içine girerse takip et
             if (distanceToPlayer <= detectionRadius)
             {
@@ -45,7 +53,9 @@ namespace NRPG.Core
                 // Oyuncuya yeterince yaklaştığında işlemi tetikle
                 if (distanceToPlayer <= actionDistance && canAttack)
                 {
+                    Debug.Log("1");
                     Attack();
+                    
                 }
 
                 // Oyuncuya çok yaklaştığında dur
@@ -65,8 +75,8 @@ namespace NRPG.Core
         {
             if (!_navMeshAgent.pathPending && _navMeshAgent.enabled) // Agent etkin mi?
             {
-                _navMeshAgent.SetDestination(player.position);
-                
+                _navMeshAgent.SetDestination(_player.position);
+                IsWalk(true);
             }
         }
         void FlipPlayer(Vector2 target)
@@ -87,13 +97,26 @@ namespace NRPG.Core
             if (_navMeshAgent.enabled) // Agent etkinse durdur
             {
                 _navMeshAgent.ResetPath();
+                IsWalk(false);
             }
+        }
+        public void Die()
+        {
+            _navMeshAgent.enabled = false;
         }
 
         private void Attack()
         {
-            _attack.TryShortRangeAttack(player.position);
+            if (enemyTag=="LongRange")
+            {
+                _attack.LongRangeAttack(_player.position);
+            }
+            if (enemyTag=="ShortRange")
+            {
+                _attack.TryShortRangeAttack(_player.position);
+            }
             StartCoroutine(AttackCooldownRoutine());
+            Debug.Log("asdassadasa");
         }
 
         private IEnumerator AttackCooldownRoutine()
@@ -101,6 +124,10 @@ namespace NRPG.Core
             canAttack = false;  // Saldırı sırasında saldırıyı durdur
             yield return new WaitForSeconds(_attack.attackCooldown);  // Cooldown süresi boyunca bekle
             canAttack = true;  // Cooldown süresi bittikten sonra tekrar saldırıya izin ver
+        }
+        void IsWalk(bool isWalk)
+        {
+            _anim.SetBool("isWalking",_isWalking);
         }
 
         private void OnDrawGizmosSelected()

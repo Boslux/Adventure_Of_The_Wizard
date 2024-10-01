@@ -68,6 +68,7 @@ namespace NRPG.Movement
             {
                 isFacingRight = shouldFaceRight;
                 _spriteRenderer.flipX = !isFacingRight; // Sağdayken flipX false, soldayken true
+                
             }
         }
 #endregion
