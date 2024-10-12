@@ -33,7 +33,7 @@ public class SkillsEffect : MonoBehaviour
         {
             yield return new WaitForSeconds(0.1f); // Yıkım sonrası küçük bekleme
         }
-
+        
         Destroy(gameObject); // Nesneyi yok et
     }
 

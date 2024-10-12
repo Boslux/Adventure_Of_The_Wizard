@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace NRPG.Save
@@ -8,7 +9,16 @@ namespace NRPG.Save
     public class SaveData
     {
         public CharacterData characterData;
-        public InventoryData inventoryData;
+        public List<EnemyData> enemies = new List<EnemyData>();   // Düşmanlar için veri listesi
+        //public InventoryData inventoryData;
         //boss ve görevler için daha sonra ayarla
     }
+}
+
+[Serializable]
+public class EnemyData
+{
+    public string enemyID;         // Benzersiz düşman kimliği
+    public Vector3 position;       // Düşmanın pozisyonu
+    public bool isAlive;           // Düşmanın canlı olup olmadığı
 }

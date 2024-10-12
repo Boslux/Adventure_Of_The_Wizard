@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/GameScenes/Town.unity
     guid: 8c9cfa26abfee488c85f1582747f6a02
+  - enabled: 1
+    path: Assets/GameScenes/orkLevel.unity
+    guid: db5d71540161e8b4eae66700c1525e5c
   m_configObjects: {}

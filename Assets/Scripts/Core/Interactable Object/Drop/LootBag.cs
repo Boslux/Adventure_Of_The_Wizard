@@ -1,48 +1,79 @@
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace NRPG.Core
 {
     public class LootBag : MonoBehaviour
     {
-        public GameObject dropedItemPrefab;
-        public List<Loot> lootList=new List<Loot>();
+        [Tooltip("Düşen eşyaların prefab'ı.")]
+        public GameObject dropedItemPrefab; // Düşen eşyanın prefab'ı.
 
-        Loot GetDropedItem()
+        [Tooltip("Bu loot bag'den düşebilecek eşyaların listesi.")]
+        public List<Loot> lootList = new List<Loot>(); // Düşebilecek eşyaların listesi.
+
+        // Bu metodla rastgele bir item seçiyoruz ve o item'in düşmesini sağlıyoruz.
+        public void DropLoot(Vector3 spawnPosition)
         {
-            int randomNumber=Random.Range(1,101);
-            List<Loot> possibleItems=new List<Loot>();
+            Item droppedItem = GetDropedItem(); // Eşyanın düşmesini sağlayan metod.
 
-            foreach(Loot item in lootList)
+            if (droppedItem != null)
             {
-                if(randomNumber<=item.dropChance)
+                // Yeni bir oyun objesi oluşturuluyor.
+                GameObject lootGameObject = Instantiate(dropedItemPrefab, spawnPosition, Quaternion.identity);
+
+                // SpriteRenderer ile düşen item'in görselini ayarlıyoruz.
+                SpriteRenderer spriteRenderer = lootGameObject.GetComponent<SpriteRenderer>();
+                if (spriteRenderer != null)
                 {
-                    possibleItems.Add(item);
+                    spriteRenderer.sprite = droppedItem.image;
+                }
+
+                // Burada item referansını alıyoruz, böylece etkileşimde ne olduğunu biliyoruz.
+                lootGameObject.AddComponent<LootInteract>().Initialize(droppedItem);
+            }
+            else
+            {
+                Debug.LogError("Hiçbir item düşmedi.");
+            }
+        }
+
+        // Rastgele bir item seçen metod.
+        private Item GetDropedItem()
+        {
+            if (lootList == null || lootList.Count == 0)
+            {
+                Debug.LogError("Loot listesi boş.");
+                return null;
+            }
+
+            float totalDropChance = 0f;
+            foreach (Loot loot in lootList)
+            {
+                totalDropChance += loot.dropChance;
+            }
+
+            float randomValue = Random.Range(0f, totalDropChance);
+            float cumulativeChance = 0f;
+
+            foreach (Loot loot in lootList)
+            {
+                cumulativeChance += loot.dropChance;
+                if (randomValue <= cumulativeChance)
+                {
+                    return loot.item;
                 }
             }
-            if (possibleItems.Count>0)
-            {
-                Loot droppedItem=possibleItems[Random.Range(0,possibleItems.Count)];
-                return droppedItem;
-            }
-            Debug.Log("No droped item");
             return null;
         }
-        public void InstantiateLoot(Vector3 spawnposition)
-        {
-            Loot dropedItem=GetDropedItem();
-            if (dropedItem!=null)
-            {
-                GameObject lootGameObject=Instantiate(dropedItemPrefab, spawnposition,Quaternion.identity);
-                lootGameObject.GetComponent<SpriteRenderer>().sprite=dropedItem.lootSprite;
+    }
 
-                float dropForce =300f;
-                Vector2 droppDirection=new Vector2(Random.Range(-1f,1f),Random.Range(-1,1f));
-                lootGameObject.GetComponent<Rigidbody2D>().AddForce(droppDirection*dropForce,ForceMode2D.Impulse);
-            }
-        }
-
-            
+    // Loot class'ı, düşebilecek olan item'leri tanımlamak için kullanılıyor.
+    [System.Serializable]
+    public class Loot
+    {
+        public Item item;
+        public Sprite lootSprite;
+        public float dropChance;
     }
 }

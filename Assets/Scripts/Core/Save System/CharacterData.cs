@@ -1,10 +1,12 @@
 using System;
+using UnityEngine;
 
 namespace NRPG.Save
 {
     [Serializable]
     public class CharacterData
     {
+        public Vector2 lastPosition;
         public int level;
         public float currentHealth;
         public float currentMana;

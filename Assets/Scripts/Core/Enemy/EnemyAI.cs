@@ -12,7 +12,7 @@ namespace NRPG.Core
         Transform _player;             // Oyuncunun transform'u
         public float actionDistance = 1.5f;  // İşlemin tetikleneceği mesafe
         private bool isFacingRight = false; //default olarak karakter sola bakıyor varsayalım
-        bool _isWalking;
+        //bool _isWalking;
         [SerializeField] string enemyTag;
 
         [Header("Components")]
@@ -53,7 +53,6 @@ namespace NRPG.Core
                 // Oyuncuya yeterince yaklaştığında işlemi tetikle
                 if (distanceToPlayer <= actionDistance && canAttack)
                 {
-                    Debug.Log("1");
                     Attack();
                     
                 }
@@ -116,7 +115,6 @@ namespace NRPG.Core
                 _attack.TryShortRangeAttack(_player.position);
             }
             StartCoroutine(AttackCooldownRoutine());
-            Debug.Log("asdassadasa");
         }
 
         private IEnumerator AttackCooldownRoutine()
@@ -127,7 +125,7 @@ namespace NRPG.Core
         }
         void IsWalk(bool isWalk)
         {
-            _anim.SetBool("isWalking",_isWalking);
+            _anim.SetBool("isWalking",isWalk);
         }
 
         private void OnDrawGizmosSelected()

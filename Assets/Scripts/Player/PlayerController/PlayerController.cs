@@ -7,6 +7,8 @@ using NRPG.Core;
 using NRPG.Attack;
 using NRPG.UI;
 using NRPG.Save;
+using UnityEngine.EventSystems;
+using System.ComponentModel;
 
 namespace NRPG.Controller
 {
@@ -14,11 +16,21 @@ namespace NRPG.Controller
     {
         [Header("Mover")]
         Mover _mover;
+
         [Header("CharacterStats")]
         PlayerStats _stats;
-        [Header("SkillCoolDownController")]
-        SkillCoolDownController _skillCoolDown;
 
+        [Header("SkillCoolDownController")]
+        SkillCooldownController _skillCoolDown;
+
+        [Header("Sounds")]
+        PlayerSounds _sounds;
+
+        [Header("UseMana")]
+        HealthManaSystem _healthManaSystem;
+
+        [Header("SkillController")]
+        SkillController _skillController;
 
         [Header("Layers")]
         public LayerMask walkableLayer; // Yürünebilir alanlar için LayerMask
@@ -27,64 +39,56 @@ namespace NRPG.Controller
 
         void Components()
         {
-            _skillCoolDown=GameObject.Find("UI_Controller").GetComponent<SkillCoolDownController>();
+            // Skill Cooldown Controller
+            _skillCoolDown = GameObject.Find("UI_Controller").GetComponent<SkillCooldownController>();
+            // Mover
             _mover = GetComponent<Mover>();
-            _stats=GetComponent<PlayerStats>();
+            // Player Stats 
+            _stats = GetComponent<PlayerStats>();
+            // Player Sounds
+            _sounds = GetComponent<PlayerSounds>();
+            // Health Mana System
+            _healthManaSystem = GetComponent<HealthManaSystem>();
+            // Skill Controller 
+            _skillController = GetComponent<SkillController>();
         }
 
-        private void Awake() 
+        private void Awake()
         {
             Components();
-            
         }
 
-        private void Update() 
+        private void Update()
         {
-            // Yürüme animasyonu kontrolü
-            FillManaAndHealth();
-            UseSkills();
+            // Controller
+            _sounds.PlayFootstepSound(_mover.pVelocity);
+            _healthManaSystem.FillManaAndHealth(_stats);
+            _skillController.UseSkills(_sounds, _stats, _healthManaSystem, _skillCoolDown);
             _mover.IsWalking();
 
-            if (InteractWithOthers())
+            if (!IsPointerOverUI()) //tıklama ui üstünde mi kontrol et
             {
-                return; // Eğer bu değer doğruysa, hareket kodlarına devam etmeyecek sadece combat kodunu döndürecek
-            }
-            if (InteractWithMovement())
-            {
-                return;
-            }
-            Debug.Log("All Functions are False");
-        }
-        void UseSkills()
-        {
-            float qCost=3;
-            float wCost=10;
-            float eCost=5;
-
-            if (Input.GetKeyDown(KeyCode.Q) && _stats.currentMana>=qCost && _skillCoolDown._fireBallTimer <= 0)
-            {
-                _skillCoolDown.UseFireball();
-                UseMana(qCost);
-            }
-            if (Input.GetKeyDown(KeyCode.W)&&_stats.currentMana>=wCost && _skillCoolDown._fireWaveTimer <= 0)
-            {
-                _skillCoolDown.UseFirewave();
-                UseMana(wCost);
-            }
-            if (Input.GetKey(KeyCode.E) && Input.GetMouseButtonDown(0) && _stats.currentMana>=eCost &&_skillCoolDown._teleportTimer <= 0)
-            {
-                _skillCoolDown.UseTeleport();
-                UseMana(eCost);
+                if (InteractWithOthers())
+                {
+                    return; // Eğer bu değer doğruysa, hareket kodlarına devam etmeyecek sadece combat kodunu döndürecek
+                }
+                if (InteractWithMovement())
+                {
+                    return;
+                }
             }
 
+            // Debug.Log("All Functions are False");
         }
         private Ray MouseLocation()
         {
             // Ekrandaki fare konumunu 2D ray'e dönüştür
             return Camera.main.ScreenPointToRay(Input.mousePosition);
         }
+        #region Keycodes
 
-#region Movement
+        #endregion
+        #region Movement
         private bool InteractWithMovement()
         {
             // 2D ray'i sadece "walkable" katmanına karşı fırlat
@@ -97,17 +101,17 @@ namespace NRPG.Controller
                 if (Input.GetMouseButton(0))
                 {
                     _mover.MoveToTarget(hit.point);
+
                 }
                 return true;
             }
             return false;
         }
-#endregion
-
-#region Interaction
+        #endregion
+        #region Interaction
         bool InteractWithOthers()
         {
-            RaycastHit2D hit = Physics2D.Raycast(MouseLocation().origin, MouseLocation().direction,Mathf.Infinity, othersLayer);
+            RaycastHit2D hit = Physics2D.Raycast(MouseLocation().origin, MouseLocation().direction, Mathf.Infinity, othersLayer);
 
             if (hit.collider != null)
             {
@@ -118,21 +122,28 @@ namespace NRPG.Controller
                     // İçindeki etkileşim fonksiyonunu çalıştır
                     if (interaction != null)
                     {
-                        interaction.Interaction();
+                        interaction.Interaction();       
                     }
-                    
+
                 }
                 return true;
             }
             return false;
         }
-#endregion
+        #endregion
 
-#region Health, level, Heal
+        bool IsPointerOverUI()
+        {
+            return EventSystem.current.IsPointerOverGameObject();
+        }
+
+        #region Level, Take Damage
         // Karakterin seviyesini artır
 
         public void LevelUp()
         {
+            _sounds.PlaySound(2);
+            // burada level atlama sesei
             _stats.level++;
             // Seviye atlayınca canı tam dolsun
             _stats.currentHealth = _stats.maxHealth;
@@ -142,6 +153,8 @@ namespace NRPG.Controller
         // Karakterin aldığı hasar
         public void TakeDamage(float damage)
         {
+            _sounds.PlaySound(1);
+            // burada damage alma sesi
             float finalDamage = damage - _stats.defensePower;
             if (finalDamage < 0) finalDamage = 0; // Negatif hasar almamak için
 
@@ -150,57 +163,6 @@ namespace NRPG.Controller
 
             Debug.Log("Damage Taken: " + finalDamage + " | Current Health: " + _stats.currentHealth);
         }
-#region Mana
-        
-        public bool UseMana(float manaCost)
-        {
-            // Eğer yeterli mana varsa
-            if (_stats.currentMana >= manaCost)
-            {
-                // Mana'yı azalt
-                _stats.currentMana -= manaCost;
-
-                // Mana'yı sınırla (eksi değerlere düşmesin)
-                if (_stats.currentMana < 0)
-                {
-                    _stats.currentMana = 0;
-                }
-
-                Debug.Log("Mana used: " + manaCost + " | Remaining Mana: " + _stats.currentMana);
-                return true; // Mana kullanım başarılı
-            }
-            else
-            {
-                Debug.LogWarning("Not enough mana! Required: " + manaCost + " | Current Mana: " + _stats.currentMana);
-                return false; // Yeterli mana yok
-            }
-        }
-#endregion
-        void FillManaAndHealth()
-        {
-            if (_stats.currentMana<_stats.maxMana)
-            {
-                _stats.currentMana+=Time.deltaTime*_stats.manaRegeneration;
-            }
-            if (_stats.currentHealth<_stats.maxHealth)
-            {
-                _stats.currentHealth+=Time.deltaTime*_stats.healthRegeneration;
-            }
-            
-        }
-        // Canını doldur
-        void Heal(float amount)
-        {
-            _stats.currentHealth += amount;
-            if (_stats.currentHealth > _stats.maxHealth)
-                _stats.currentHealth = _stats.maxHealth;
-            Debug.Log("Healed: " + amount + " | Current Health: " + _stats.currentHealth);
-        }
-        public void IncreaseMoney()
-        {
-            int newMoney=Random.Range(0, 10);
-            _stats.money+=newMoney;
-        }
-#endregion
+        #endregion
     }
 }
