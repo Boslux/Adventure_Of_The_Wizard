@@ -9,20 +9,26 @@ public static class SaveSystem
 {
     private static string savePath = Application.persistentDataPath + "/savefile.json";
 
-    public static void SaveGame(PlayerStats playerStats, List<EnemyController> enemies)
+    public static void SaveGame(PlayerStats playerStats, List<EnemyController> enemies, InventoryManager inventoryManager)
     {
+        // Geçersiz (null) düşmanları listeden çıkar
+        enemies.RemoveAll(enemy => enemy == null);
+
         SaveData data = new SaveData();
         data.characterData = new CharacterData();
 
         // Karakterin istatistiklerini kopyala
         CopyStatsToData(playerStats, data.characterData);
 
-        // Düşmanların durumlarını kopyala
+        // Envanteri kaydet
+        data.inventoryData = inventoryManager.SaveInventory();
+
+        // Düşmanların durumlarını kaydet
         foreach (EnemyController enemy in enemies)
         {
             EnemyData enemyData = new EnemyData
             {
-                enemyID = enemy.enemyID,              // Benzersiz ID'yi kullan
+                enemyID = enemy.enemyID,
                 position = enemy.transform.position,
                 isAlive = enemy.isAlive
             };
@@ -36,15 +42,21 @@ public static class SaveSystem
         Debug.Log("Game Saved to: " + savePath);
     }
 
-    public static void LoadGame(PlayerStats playerStats, List<EnemyController> enemies)
+
+
+
+    public static void LoadGame(PlayerStats playerStats, List<EnemyController> enemies, InventoryManager inventoryManager)
     {
         if (File.Exists(savePath))
         {
             string json = File.ReadAllText(savePath);
             SaveData data = JsonUtility.FromJson<SaveData>(json);
 
-            // Karakterin istatistiklerini kopyala
+            // Karakterin istatistiklerini geri yükle
             CopyDataToStats(data.characterData, playerStats);
+
+            // Envanteri geri yükle
+            inventoryManager.LoadInventory(data.inventoryData);
 
             // Düşmanların durumlarını geri yükle
             foreach (EnemyData enemyData in data.enemies)
@@ -65,6 +77,8 @@ public static class SaveSystem
             Debug.LogWarning("Save file not found at: " + savePath);
         }
     }
+
+
     #region Stats Data
     public static void CopyStatsToData(PlayerStats playerStats, CharacterData characterData)
     {

@@ -181,11 +181,11 @@ MonoBehaviour:
   prepareAttack: 0.5
   attackCooldown: 1
   shortRange: 1.5
-  longRange: 3
+  longRange: 8
   layer:
     serializedVersion: 2
     m_Bits: 128
-  _damage: 1
+  _damage: 12
   projectilePrefab: {fileID: 6844588755315511051, guid: 953574cd1ce296b4ca5c9d5c0f966107, type: 3}
   projectileSpeed: 5
 --- !u!114 &6279731559948320071
@@ -202,7 +202,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyID: 
   isAlive: 1
-  _health: 10
+  _health: 15
   damageSound: {fileID: 8300000, guid: 5ca372afd445520468e3190ca27e64d4, type: 3}
 --- !u!95 &1619199332299159547
 Animator:
@@ -239,18 +239,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   dropedItemPrefab: {fileID: 9143645257234479445, guid: b62e15e62c0ebf24182ebb80f32dd74b, type: 3}
   lootList:
-  - item: {fileID: 11400000, guid: 9e36b37c4c8eb664ab626d4ba931bc02, type: 2}
-    lootSprite: {fileID: 21300000, guid: 27b4d11dbea2a1345972b11d27d29a3e, type: 3}
-    dropChance: 5
-  - item: {fileID: 11400000, guid: 4b282d90bc21321419cef690c69845ab, type: 2}
-    lootSprite: {fileID: 1220712509, guid: b5f81e71bdecbcd409959d9c41e872c1, type: 3}
-    dropChance: 50
-  - item: {fileID: 11400000, guid: b36d297c6e518294d8ec06fcdcfb71ae, type: 2}
-    lootSprite: {fileID: -849236819, guid: b5f81e71bdecbcd409959d9c41e872c1, type: 3}
-    dropChance: 50
-  - item: {fileID: 11400000, guid: 8d215a97a0e1d1c42bd12643cd500efa, type: 2}
-    lootSprite: {fileID: 1220712509, guid: b5f81e71bdecbcd409959d9c41e872c1, type: 3}
+  - item: {fileID: 11400000, guid: 8a3a2e5d632a425448a9e81c5216d765, type: 2}
+    dropChance: 30
+  - item: {fileID: 11400000, guid: 96b0a0eefa419d54185b5a17324f450c, type: 2}
+    dropChance: 35
+  - item: {fileID: 11400000, guid: fc6cd7571db65a04fb7ee9d48c6d39b6, type: 2}
+    dropChance: 10
+  - item: {fileID: 11400000, guid: 05f8bd9b135e38c4cb3b6461d2240b1e, type: 2}
+    dropChance: 70
+  - item: {fileID: 11400000, guid: fac6cc4c742b28c4fb5d6902abaf1d9f, type: 2}
+    dropChance: 15
+  - item: {fileID: 11400000, guid: 2ff3c2594b474994a92ae9e7911bf3f2, type: 2}
+    dropChance: 20
+  - item: {fileID: 11400000, guid: 8f779187afbb6ac46ab90d3078496f95, type: 2}
     dropChance: 60
+  noDropChance: 50
 --- !u!82 &-1843244423474545339
 AudioSource:
   m_ObjectHideFlags: 0

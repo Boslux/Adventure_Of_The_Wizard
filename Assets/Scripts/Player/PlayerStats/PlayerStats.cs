@@ -11,6 +11,8 @@ using UnityEngine;
         public float defensePower = 5f;
         public float experience = 1f;
 
+        public int skillPoint=0;
+
         public float fireBallCooldown = 1;
         public float teleportCooldown = 6f;
         public float fireWaveCooldown = 5f;

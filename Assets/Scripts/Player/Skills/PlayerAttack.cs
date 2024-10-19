@@ -36,15 +36,19 @@ namespace NRPG.Attack
 
         private void Awake() 
         {
-            _collider=GetComponent<CapsuleCollider2D>();
-            _anim = GetComponent<Animator>();
-            spawnLocation = GameObject.Find("FirePosition").GetComponent<Transform>();
-            _stats=GetComponent<PlayerStats>();
-
+            Components();
+            
             _fireballCooldown=_stats.fireBallCooldown;
             _fireWaveCooldown=_stats.fireWaveCooldown;
             _teleportCooldown=_stats.teleportCooldown;
 
+        }
+        void Components()
+        {
+            _collider=GetComponent<CapsuleCollider2D>();
+            _anim = GetComponent<Animator>();
+            spawnLocation = GameObject.Find("FirePosition").GetComponent<Transform>();
+            _stats=GetComponent<PlayerStats>();
         }
 
         // Ateş topu atma işlevi

@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class SkillController : MonoBehaviour
 {
-    public void UseSkills(PlayerSounds sounds, PlayerStats stats, HealthManaSystem healthManaSystem, SkillCooldownController skillCooldownController)
+    
+    public void UseSkills(PlayerSounds sounds, PlayerStats stats, HealthManaSystem healthManaSystem, SkillCooldownController skillCooldownController, GameObject inventory, GameObject statsBorder)
     {
         float qCost = 3;
         float wCost = 10;
@@ -31,5 +32,25 @@ public class SkillController : MonoBehaviour
         {
             skillCooldownController.UseLight();
         }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            InventorySetActive(inventory);
+        }
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            StatsBorder(statsBorder);
+        }
+    }
+    bool isInventoryActive;
+    void InventorySetActive(GameObject inventory)
+    {
+        isInventoryActive=!isInventoryActive;
+        inventory.SetActive(isInventoryActive);
+    }
+    bool isStatsBorderActive;
+    void StatsBorder(GameObject statsBorder)
+    {
+        isStatsBorderActive=!isStatsBorderActive;
+        statsBorder.SetActive(isStatsBorderActive);
     }
 }

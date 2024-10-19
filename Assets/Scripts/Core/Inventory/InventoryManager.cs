@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class InventoryManager : MonoBehaviour
 {
@@ -8,7 +10,36 @@ public class InventoryManager : MonoBehaviour
     public InventorySlot[] inventorySlot;
     public GameObject inventoryItemPrefab;
 
-    // Bu metod, belirli bir item'i envantere ekler.
+    // Kuşanılan silah ve zırhın yerleştirileceği slotlar
+    public Transform weaponSlot; // Weapon Equipment slotu
+    public Transform armorSlot;  // Armor Equipment slotu
+
+    [Header("PlayerEquipt")]
+    PlayerEquipt playerEquipt;
+    [Header("PlayerStats")]
+    PlayerStats playerStats;
+    [Header("Health Mana")]
+    HealthManaSystem healthManaSystem;
+
+    [Header("TextForStats")]
+    public Text atkPowerText;
+    public Text defPowerText;
+
+    private void Awake()
+    {
+        Components();
+    }
+    private void Update()
+    {
+        atkPowerText.text = "ATK: " + playerStats.attackPower.ToString();
+        defPowerText.text = "DEF: " + playerStats.defensePower.ToString();
+    }
+    void Components()
+    {
+        playerEquipt = GameObject.Find("Player").GetComponent<PlayerEquipt>();
+        playerStats = GameObject.Find("Player").GetComponent<PlayerStats>();
+        healthManaSystem = GameObject.Find("Player").GetComponent<HealthManaSystem>();
+    }
     public bool PickUpItem(Item item)
     {
         for (int i = 0; i < inventorySlot.Length; i++)
@@ -65,38 +96,164 @@ public class InventoryManager : MonoBehaviour
 
     public void UseItem(Item item)
     {
-        if (item.type == Itemtype.Useable)
+        if (item is Pots pot)
         {
-            //can, mana vs için olan kodlar
-            Debug.Log("cam dolduruldu");
+            healthManaSystem.UsePots(playerStats, pot.fillMana, pot.fillHealth);
+
+            RemoveItemFromInventory(item);
         }
-        else if (item.type == Itemtype.Weapon)
+        else if (item is Weapons weapon)
         {
-            //silah itemini giyme
-            Debug.Log("zırh donanıldı");
-            //itemleri farklı dosyalara aldık onları kodla
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                playerEquipt.UnequipWeapon(playerStats);
+                UnEquipItem(weaponSlot);
+                ;
+            }
+            else
+            {
+                EquipItem(weapon, weaponSlot); // Silah kuşanılıyor
+                playerEquipt.EquipWeapon(playerStats, weapon);
+            }
         }
-        else if (item.type == Itemtype.Wearable)
+        else if (item is Armor armor)
         {
-            //zırh vs bunları giyme işlemi
-            Debug.Log("kolya takıldı");
+            if (Input.GetKey(KeyCode.LeftControl))
+            {
+                playerEquipt.UnequipArmor(playerStats);
+                UnEquipItem(armorSlot);
+            }
+            else
+            {
+                EquipItem(armor, armorSlot); // Zırh kuşanılıyor
+                playerEquipt.EquipArmor(playerStats, armor);
+            }
         }
     }
 
-    // Kullanılan item'i envanterden kaldırmak için (örneğin tek kullanımlı item'ler için)
-    public void RemoveItem(Item item)
+    // Kuşanılan item'in doğru slot'a gönderilmesi
+    private void EquipItem(Item item, Transform equipmentSlot)
     {
+        // Yeni item'in kuşanılacağı slotun mevcut içeriğini temizleyelim
+        foreach (Transform child in equipmentSlot)
+        {
+            Destroy(child.gameObject);
+        }
+
+        // Yeni item'i equipment slot'a ekleyelim
+        GameObject newItemGo = Instantiate(inventoryItemPrefab, equipmentSlot);
+        InventoryItem inventoryItem = newItemGo.GetComponent<InventoryItem>();
+
+        if (inventoryItem != null)
+        {
+            // Yeni item'i slot'a yerleştir
+            inventoryItem.InitialisedItem(item);
+            // Slot pozisyonunu sıfırlıyoruz
+            newItemGo.transform.localPosition = Vector3.zero;
+        }
+        else
+        {
+            Debug.LogError("InventoryItem bileşeni bulunamadı.");
+        }
+    }
+    private void UnEquipItem(Transform equipmentSlot)
+    {
+        // Kuşanılan item'i equipment slot'tan kaldırmak için mevcut içeriği yok edelim
+        foreach (Transform child in equipmentSlot)
+        {
+            Destroy(child.gameObject); // Slot'taki item'i yok eder
+        }
+
+        Debug.Log("Eşya çıkarıldı ve slot temizlendi.");
+    }
+
+
+
+    private void RemoveItemFromInventory(Item item)
+    {
+        // Envanterdeki slotları kontrol ediyoruz
         for (int i = 0; i < inventorySlot.Length; i++)
         {
             InventorySlot slot = inventorySlot[i];
-            InventoryItem itemsInSlot = slot.GetComponentInChildren<InventoryItem>();
+            InventoryItem inventoryItem = slot.GetComponentInChildren<InventoryItem>();
 
-            if (itemsInSlot != null && itemsInSlot.item == item)
+            if (inventoryItem != null && inventoryItem.item == item)
             {
-                Destroy(itemsInSlot.gameObject); // Item'i UI'dan kaldır
+                // Sahnedeki InventoryItem'ı yok ediyoruz
+                Destroy(inventoryItem.gameObject);
                 Debug.Log(item.name + " envanterden kaldırıldı.");
                 return;
             }
         }
     }
+
+    public InventoryData SaveInventory()
+    {
+        InventoryData inventoryData = new InventoryData();
+
+        foreach (InventorySlot slot in inventorySlot)
+        {
+            InventoryItem inventoryItem = slot.GetComponentInChildren<InventoryItem>();
+            if (inventoryItem != null && inventoryItem.item != null)
+            {
+                // Item'in adını ve sayısını kaydediyoruz
+                InventoryItemData itemData = new InventoryItemData
+                {
+                    itemName = inventoryItem.item.itemName,
+                    count = inventoryItem.count
+                };
+                inventoryData.items.Add(itemData);
+            }
+        }
+
+        return inventoryData;
+    }
+    public InventorySlot FindEmptySlot()
+    {
+        foreach (InventorySlot slot in inventorySlot)
+        {
+            InventoryItem itemInSlot = slot.GetComponentInChildren<InventoryItem>();
+            if (itemInSlot == null)
+            {
+                return slot; // Boş slotu bulduk, geri döndürüyoruz
+            }
+        }
+        Debug.LogWarning("Boş slot bulunamadı!");
+        return null; // Boş slot yoksa null döner
+    }
+
+    public void LoadInventory(InventoryData inventoryData)
+    {
+        // Öncelikle mevcut envanteri temizliyoruz
+        foreach (InventorySlot slot in inventorySlot)
+        {
+            InventoryItem inventoryItem = slot.GetComponentInChildren<InventoryItem>();
+            if (inventoryItem != null)
+            {
+                Destroy(inventoryItem.gameObject); // Mevcut item'ları kaldırıyoruz
+            }
+        }
+
+        // Kaydedilmiş envanter item'lerini geri yüklüyoruz
+        foreach (InventoryItemData itemData in inventoryData.items)
+        {
+            // Kaydedilen item'i Resources klasöründen yüklüyoruz
+            Item loadedItem = Resources.Load<Item>("Items/" + itemData.itemName);
+            if (loadedItem != null)
+            {
+                // Yeni item'i slot'a ekliyoruz
+                InventorySlot emptySlot = FindEmptySlot();
+                if (emptySlot != null)
+                {
+                    SpawnNewItem(loadedItem, emptySlot);
+                }
+            }
+            else
+            {
+                Debug.LogError("Item not found: " + itemData.itemName);
+            }
+        }
+    }
+
+
 }

@@ -21,6 +21,9 @@ GameObject:
   - component: {fileID: 6433474934240120047}
   - component: {fileID: 3091956109214431494}
   - component: {fileID: 1574721802393377538}
+  - component: {fileID: 2090979945453945628}
+  - component: {fileID: 8519184570218617768}
+  - component: {fileID: 6619004107570098734}
   m_Layer: 7
   m_Name: Player
   m_TagString: Player
@@ -247,6 +250,7 @@ MonoBehaviour:
   attackPower: 2
   defensePower: 5
   experience: 1
+  skillPoint: 0
   fireBallCooldown: 1
   teleportCooldown: 6
   fireWaveCooldown: 5
@@ -391,6 +395,57 @@ MonoBehaviour:
   _stepAudioSource: {fileID: 0}
   footstepSound: {fileID: 8300000, guid: 911674eead440f348a5a0abfed23bc16, type: 3}
   footstepInterval: 0.4
+--- !u!114 &2090979945453945628
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918545397529564075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 84e49596cdeacdc449d6292842580ec6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!50 &8519184570218617768
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918545397529564075}
+  m_BodyType: 1
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 4
+--- !u!114 &6619004107570098734
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 918545397529564075}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48c2c586654666f48a6189aeabd95a62, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &2613642328346531636
 GameObject:
   m_ObjectHideFlags: 0

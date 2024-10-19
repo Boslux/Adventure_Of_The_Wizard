@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c92d06d639d7154994481cbbe1583ab, type: 3}
+  m_Name: Middle Nackles
+  m_EditorClassIdentifier: 
+  itemName: Middle Nackles
+  dropChance: 10
+  type: 1
+  actionType: 1
+  range: {x: 5, y: 4}
+  stackable: 0
+  image: {fileID: 1079307769, guid: 2d51bc590c194904d97ecf7af55d815b, type: 3}
+  defensePower: 3

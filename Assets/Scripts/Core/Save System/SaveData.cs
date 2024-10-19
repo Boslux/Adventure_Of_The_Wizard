@@ -10,8 +10,8 @@ namespace NRPG.Save
     {
         public CharacterData characterData;
         public List<EnemyData> enemies = new List<EnemyData>();   // Düşmanlar için veri listesi
-        //public InventoryData inventoryData;
-        //boss ve görevler için daha sonra ayarla
+        public InventoryData inventoryData; // Envanter verisi
+
     }
 }
 

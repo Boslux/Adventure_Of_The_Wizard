@@ -12,10 +12,14 @@ namespace NRPG.Core
         [Tooltip("Bu loot bag'den düşebilecek eşyaların listesi.")]
         public List<Loot> lootList = new List<Loot>(); // Düşebilecek eşyaların listesi.
 
-        // Bu metodla rastgele bir item seçiyoruz ve o item'in düşmesini sağlıyoruz.
+        [Tooltip("Hiçbir şey düşmeme ihtimali (yüzde olarak).")]
+        [Range(0, 100)] 
+        public float noDropChance = 0f; // Hiçbir şey düşmeme şansı.
+
+        // Rastgele bir item seçiyoruz ve o item'in düşmesini sağlıyoruz.
         public void DropLoot(Vector3 spawnPosition)
         {
-            Item droppedItem = GetDropedItem(); // Eşyanın düşmesini sağlayan metod.
+            Item droppedItem = GetDroppedItem(); // Eşyanın düşmesini sağlayan metod.
 
             if (droppedItem != null)
             {
@@ -34,12 +38,12 @@ namespace NRPG.Core
             }
             else
             {
-                Debug.LogError("Hiçbir item düşmedi.");
+                Debug.Log("Hiçbir item düşmedi.");
             }
         }
 
         // Rastgele bir item seçen metod.
-        private Item GetDropedItem()
+        private Item GetDroppedItem()
         {
             if (lootList == null || lootList.Count == 0)
             {
@@ -47,24 +51,50 @@ namespace NRPG.Core
                 return null;
             }
 
-            float totalDropChance = 0f;
-            foreach (Loot loot in lootList)
+            // Tüm drop şanslarını hesaplıyoruz
+            float totalDropChance = CalculateTotalDropChance();
+
+            // Eğer toplam şans 0 veya daha azsa, hiçbir eşya düşmeyecektir.
+            if (totalDropChance <= 0)
             {
-                totalDropChance += loot.dropChance;
+                Debug.LogWarning("Toplam drop şansı sıfır veya negatif. Hiçbir şey düşmeyecek.");
+                return null;
             }
 
+            // Rastgele bir sayı seçiyoruz
             float randomValue = Random.Range(0f, totalDropChance);
-            float cumulativeChance = 0f;
 
+            float cumulativeChance = 0f;
             foreach (Loot loot in lootList)
             {
                 cumulativeChance += loot.dropChance;
+
                 if (randomValue <= cumulativeChance)
                 {
+                    Debug.Log("Seçilen item: " + loot.item.name); // Debug için
                     return loot.item;
                 }
             }
+
+            // Eğer bir şey seçilemediyse (hiçbir şey düşmedi)
             return null;
+        }
+
+        // Toplam drop şansını hesaplayan metod
+        private float CalculateTotalDropChance()
+        {
+            float totalChance = 0f;
+
+            // Tüm item'ların drop şansını ekle
+            foreach (Loot loot in lootList)
+            {
+                totalChance += loot.dropChance;
+            }
+
+            // No drop şansını ekle
+            totalChance += noDropChance;
+
+            return totalChance;
         }
     }
 
@@ -73,7 +103,6 @@ namespace NRPG.Core
     public class Loot
     {
         public Item item;
-        public Sprite lootSprite;
-        public float dropChance;
+        public float dropChance; // Eşyanın düşme şansı.
     }
 }

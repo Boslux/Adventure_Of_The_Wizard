@@ -34,6 +34,8 @@ namespace NRPG.UI
             _playerAttack = GameObject.Find("Player").GetComponent<PlayerAttack>();
             _light=GameObject.Find("PlayerLight");
 
+            _light.GetComponent<Light2D>().enabled=false;
+
             // Cooldown timer'larını başlat
             _fireBallTimer = 0;
             _fireWaveTimer = 0;

@@ -32,6 +32,12 @@ namespace NRPG.Controller
         [Header("SkillController")]
         SkillController _skillController;
 
+        [Header("Inventory Object")]
+        GameObject _inventory;
+        
+        [Header("Stats Border")]
+        GameObject _statsObject;
+
         [Header("Layers")]
         public LayerMask walkableLayer; // Yürünebilir alanlar için LayerMask
         public LayerMask othersLayer; // diğer alanlar için LayerMask
@@ -51,6 +57,12 @@ namespace NRPG.Controller
             _healthManaSystem = GetComponent<HealthManaSystem>();
             // Skill Controller 
             _skillController = GetComponent<SkillController>();
+            // Inventory Canvas
+            _inventory=GameObject.Find("InventoryCanvas");
+            _inventory.SetActive(false);
+
+            _statsObject=GameObject.Find("Stats");
+            _statsObject.SetActive(false);
         }
 
         private void Awake()
@@ -63,7 +75,7 @@ namespace NRPG.Controller
             // Controller
             _sounds.PlayFootstepSound(_mover.pVelocity);
             _healthManaSystem.FillManaAndHealth(_stats);
-            _skillController.UseSkills(_sounds, _stats, _healthManaSystem, _skillCoolDown);
+            _skillController.UseSkills(_sounds, _stats, _healthManaSystem, _skillCoolDown,_inventory,_statsObject);
             _mover.IsWalking();
 
             if (!IsPointerOverUI()) //tıklama ui üstünde mi kontrol et
@@ -139,17 +151,12 @@ namespace NRPG.Controller
 
         #region Level, Take Damage
         // Karakterin seviyesini artır
-
-        public void LevelUp()
+        
+        public void Level()
         {
-            _sounds.PlaySound(2);
-            // burada level atlama sesei
-            _stats.level++;
-            // Seviye atlayınca canı tam dolsun
-            _stats.currentHealth = _stats.maxHealth;
-            Debug.Log("Level Up! New Level: " + _stats.level);
+            LevelSystem lvl=GetComponent<LevelSystem>();
+            lvl.IncXp(_sounds,_stats);
         }
-
         // Karakterin aldığı hasar
         public void TakeDamage(float damage)
         {

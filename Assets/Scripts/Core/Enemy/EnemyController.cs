@@ -84,7 +84,11 @@ namespace NRPG.Core
         }
 
         private void Died()
-        {
+        {   
+            PlayerController playerController=GameObject.Find("Player").GetComponent<PlayerController>();
+            playerController.Level();
+            
+
             float _bodyDestroyTimer = 10f;
             _health = 0;
             isAlive = false;

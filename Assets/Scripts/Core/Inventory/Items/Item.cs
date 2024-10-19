@@ -7,9 +7,11 @@ using UnityEngine.Tilemaps;
 public class Item : ScriptableObject
 {
     [Header("Only Gameplay")]
-    [Tooltip("Oyunda bu eşya ile ilişkili olan tile.")]
-    public float dropChance; // Eşyanın düşme şansı. Varsayılan olarak 50% şans verelim.
+    [Tooltip("Eşyanın adı. Örneğin, 'BasicStaf'.")]
+    public string itemName; // Eşyanın adı, kaydetme ve yüklemede kullanılacak.
 
+    [Tooltip("Oyunda bu eşya ile ilişkili olan tile.")]
+    public float dropChance; // Eşyanın düşme şansı.
 
     [Tooltip("Eşyanın türü.")]
     public Itemtype type; // Eşyanın türü.
@@ -27,9 +29,6 @@ public class Item : ScriptableObject
     [Header("Both")]
     [Tooltip("Eşyaya ait görsel.")]
     public Sprite image; // Eşyaya ait UI görseli.
-
-     
-
 }
 
 public enum ActionType

@@ -1,3 +1,4 @@
+using Unity.VisualScripting.Antlr3.Runtime.Misc;
 using UnityEngine;
 
 public class HealthManaSystem : MonoBehaviour
@@ -36,4 +37,21 @@ public class HealthManaSystem : MonoBehaviour
             stats.currentHealth += Time.deltaTime * stats.healthRegeneration;
         }
     }
+    public void UsePots(PlayerStats stats, int mana, int health)
+    {
+
+        stats.currentMana += mana;
+
+        stats.currentHealth += health;
+
+        if (stats.currentMana > stats.maxMana)
+        {
+            stats.currentMana = stats.maxMana;
+        }
+        if (stats.currentHealth > stats.maxHealth)
+        {
+            stats.currentHealth = stats.maxHealth;
+        }
+    }
+
 }
