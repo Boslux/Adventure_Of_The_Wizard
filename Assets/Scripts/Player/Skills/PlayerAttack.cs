@@ -1,5 +1,5 @@
 using System.Collections;
-using NRPG.Save;
+using NRPG.Player;
 using UnityEngine;
 
 namespace NRPG.Attack
@@ -90,7 +90,7 @@ namespace NRPG.Attack
             Rigidbody2D rb = fireball.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
-                rb.velocity = direction * fireballSpeed;
+                rb.linearVelocity = direction * fireballSpeed;
             }
 
             // Ateş topunun rotasyonunu fare yönüne göre ayarla
@@ -144,7 +144,7 @@ namespace NRPG.Attack
             Rigidbody2D rb = fireball.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
-                rb.velocity = direction * fireWaveSpeed;
+                rb.linearVelocity = direction * fireWaveSpeed;
             }
 
             // Ateş topunun rotasyonunu fare yönüne göre ayarla

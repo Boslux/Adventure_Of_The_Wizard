@@ -1,25 +1,27 @@
-using System;
 using UnityEngine;
 
-public class LevelSystem : MonoBehaviour
+namespace NRPG.Player.Level
 {
-    public void IncXp(PlayerSounds sounds, PlayerStats stats)
+    public class LevelSystem : MonoBehaviour
     {
-        stats.experience+=15;
-        if (stats.experience>=100)
+        public void IncXp(PlayerSounds sounds, PlayerStats stats)
         {
-            LevelUp(sounds, stats);
-            stats.experience=0;
+            stats.experience += 15;
+            if (stats.experience >= 100)
+            {
+                LevelUp(sounds, stats);
+                stats.experience = 0;
+            }
         }
-    }
-    public void LevelUp(PlayerSounds sounds, PlayerStats stats)
-    {
-        sounds.PlaySound(2);
-        // burada level atlama sesei
-        stats.level++;
-        stats.skillPoint++;
-        // Seviye atlayınca canı tam dolsun
-        stats.currentHealth = stats.maxHealth;
-        Debug.Log("Level Up! New Level: " + stats.level);
+        public void LevelUp(PlayerSounds sounds, PlayerStats stats)
+        {
+            sounds.PlaySound(2);
+            // burada level atlama sesei
+            stats.level++;
+            stats.skillPoint++;
+            // Seviye atlayınca canı tam dolsun
+            stats.currentHealth = stats.maxHealth;
+            Debug.Log("Level Up! New Level: " + stats.level);
+        }
     }
 }

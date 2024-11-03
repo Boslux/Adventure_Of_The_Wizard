@@ -1,16 +1,18 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class StartExit : MonoBehaviour
+namespace NRPG.Core
 {
-    public void StartGame()
+    public class StartExit : MonoBehaviour
     {
-        SceneManager.LoadScene(1);
+        public void StartGame()
+        {
+            SceneManager.LoadScene(1);
+        }
+        public void ExitGame()
+        {
+            Application.Quit();
+        }
     }
-    public void ExitGame()
-    {
-        Application.Quit();
-    }
+
 }

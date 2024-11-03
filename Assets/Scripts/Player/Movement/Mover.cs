@@ -1,10 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
-using NRPG.Animations;
 using UnityEngine;
 using UnityEngine.AI;
 
-namespace NRPG.Movement
+namespace NRPG.Player.Movement
 {
     public class Mover : MonoBehaviour
     {

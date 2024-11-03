@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TeleportAfterEffect : MonoBehaviour
+namespace NRPG.Player
 {
-    void Start()
+    public class TeleportAfterEffect : MonoBehaviour
     {
-        Destroy(gameObject,0.4f);
-    }
+        void Start()
+        {
+            Destroy(gameObject, 0.4f);
+        }
 
+    }
 }

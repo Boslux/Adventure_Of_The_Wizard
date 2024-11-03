@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using NRPG.Core;
-using NRPG.Save;
+using NRPG.Player;
 
 public class SkillsEffect : MonoBehaviour
 {
@@ -26,7 +26,7 @@ public class SkillsEffect : MonoBehaviour
         // Yıkım animasyonu ve nesnenin durdurulması
         yield return new WaitForSeconds(_destroyDelay);
         _anim.SetTrigger("destroy");
-        _rb.velocity = Vector2.zero; // Hareketi durdur
+        _rb.linearVelocity = Vector2.zero; // Hareketi durdur
 
         // Destroy işlemi animasyona göre zamanlanabilir
         if (skillTag == "FireBall")

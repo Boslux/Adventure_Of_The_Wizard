@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace NRPG.Save
+namespace NRPG.Core
 {
     [Serializable]
     public class CharacterData

@@ -48,7 +48,7 @@ namespace NRPG.Core
             Rigidbody2D rb = projectile.GetComponent<Rigidbody2D>();
             if (rb != null)
             {
-                rb.velocity = direction * projectileSpeed;
+                rb.linearVelocity = direction * projectileSpeed;
             }
             // Ateş topunun rotasyonunu fare yönüne göre ayarla
             float angle = Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg;

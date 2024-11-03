@@ -1,24 +1,25 @@
-using System.Collections;
-using System.Collections.Generic;
 using NRPG.Controller;
 using UnityEngine;
 
-public class EnemyRangeAttack : MonoBehaviour
+namespace NRPG.Core
 {
-    private void Start() 
+    public class EnemyRangeAttack : MonoBehaviour
     {
-        Destroy(gameObject,7f);
-    }
-    private void OnTriggerEnter2D(Collider2D cls) 
-    {
-        if (cls.gameObject.CompareTag("Player"))
+        private void Start()
         {
-            PlayerController _pl=cls.gameObject.GetComponent<PlayerController>();
-            if (_pl!=null)
+            Destroy(gameObject, 7f);
+        }
+        private void OnTriggerEnter2D(Collider2D cls)
+        {
+            if (cls.gameObject.CompareTag("Player"))
             {
-                _pl.TakeDamage(2);
-                Destroy(gameObject);
+                PlayerController _pl = cls.gameObject.GetComponent<PlayerController>();
+                if (_pl != null)
+                {
+                    _pl.TakeDamage(2);
+                    Destroy(gameObject);
+                }
             }
-        }    
+        }
     }
 }

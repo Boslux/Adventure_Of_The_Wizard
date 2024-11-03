@@ -1,14 +1,11 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using NRPG.Movement;
-using NRPG.Animations;
+using NRPG.Player.Movement;
 using NRPG.Core;
-using NRPG.Attack;
-using NRPG.UI;
-using NRPG.Save;
+using NRPG.Player.Level;
+using NRPG.Player;
 using UnityEngine.EventSystems;
-using System.ComponentModel;
+
+using UnityEngine.SceneManagement;
 
 namespace NRPG.Controller
 {
@@ -34,7 +31,7 @@ namespace NRPG.Controller
 
         [Header("Inventory Object")]
         GameObject _inventory;
-        
+
         [Header("Stats Border")]
         GameObject _statsObject;
 
@@ -58,10 +55,10 @@ namespace NRPG.Controller
             // Skill Controller 
             _skillController = GetComponent<SkillController>();
             // Inventory Canvas
-            _inventory=GameObject.Find("InventoryCanvas");
+            _inventory = GameObject.Find("InventoryCanvas");
             _inventory.SetActive(false);
 
-            _statsObject=GameObject.Find("Stats");
+            _statsObject = GameObject.Find("Stats");
             _statsObject.SetActive(false);
         }
 
@@ -75,7 +72,7 @@ namespace NRPG.Controller
             // Controller
             _sounds.PlayFootstepSound(_mover.pVelocity);
             _healthManaSystem.FillManaAndHealth(_stats);
-            _skillController.UseSkills(_sounds, _stats, _healthManaSystem, _skillCoolDown,_inventory,_statsObject);
+            _skillController.UseSkills(_sounds, _stats, _healthManaSystem, _skillCoolDown, _inventory, _statsObject);
             _mover.IsWalking();
 
             if (!IsPointerOverUI()) //tıklama ui üstünde mi kontrol et
@@ -134,7 +131,7 @@ namespace NRPG.Controller
                     // İçindeki etkileşim fonksiyonunu çalıştır
                     if (interaction != null)
                     {
-                        interaction.Interaction();       
+                        interaction.Interaction();
                     }
 
                 }
@@ -151,11 +148,11 @@ namespace NRPG.Controller
 
         #region Level, Take Damage
         // Karakterin seviyesini artır
-        
+
         public void Level()
         {
-            LevelSystem lvl=GetComponent<LevelSystem>();
-            lvl.IncXp(_sounds,_stats);
+            LevelSystem lvl = GetComponent<LevelSystem>();
+            lvl.IncXp(_sounds, _stats);
         }
         // Karakterin aldığı hasar
         public void TakeDamage(float damage)
@@ -166,9 +163,19 @@ namespace NRPG.Controller
             if (finalDamage < 0) finalDamage = 0; // Negatif hasar almamak için
 
             _stats.currentHealth -= finalDamage;
-            if (_stats.currentHealth < 0) _stats.currentHealth = 0;
+            if (_stats.currentHealth <= 0)
+            {
+                Die();
+                _stats.currentHealth = 0;       
+            }
+
 
             Debug.Log("Damage Taken: " + finalDamage + " | Current Health: " + _stats.currentHealth);
+        }
+
+        private void Die()
+        {
+            SceneManager.LoadScene(2); //işin kolayı
         }
         #endregion
     }

@@ -1,8 +1,10 @@
 using UnityEngine;
-[CreateAssetMenu(menuName = "Scriptable object/Item/Armor")]
-
-public class Armor : Item 
+namespace NRPG.Core
 {
-    public int defensePower;
-    
+    [CreateAssetMenu(menuName = "Scriptable object/Item/Armor")]
+    public class Armor : Item
+    {
+        public int defensePower;
+
+    }
 }

@@ -13,6 +13,7 @@ namespace NRPG.Core
         }
 
         // Oyuncu item ile etkileşime girdiğinde çalışır.
+        
         private void OnMouseDown()
         {
             // InventoryManager'ı bulup item'i envantere ekleyelim.

@@ -1,23 +1,26 @@
 using UnityEngine;
-public class UIManager: MonoBehaviour
+namespace NRPG.Core
 {
-    public InventoryManager inventoryManager;
-    private Item selectedItem;
+    public class UIManager : MonoBehaviour
+    {
+        public InventoryManager inventoryManager;
+        private Item selectedItem;
 
-    public void OnUseItemButtonClicked()
-    {
-        if (selectedItem!=null)
+        public void OnUseItemButtonClicked()
         {
-            inventoryManager.UseItem(selectedItem);
-            Debug.Log("Eşya kullanıldı");
+            if (selectedItem != null)
+            {
+                inventoryManager.UseItem(selectedItem);
+                Debug.Log("Eşya kullanıldı");
+            }
+            else
+            {
+                Debug.Log("Kullanılacak item seçilmedi");
+            }
         }
-        else
+        public void SetSelectedItem(Item item)
         {
-            Debug.Log("Kullanılacak item seçilmedi");
+            selectedItem = item;
         }
-    }
-    public void SetSelectedItem(Item item)
-    {
-        selectedItem=item;
     }
 }

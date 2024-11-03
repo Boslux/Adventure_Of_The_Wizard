@@ -1,36 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
-using NRPG.Save;
-using Unity.VisualScripting;
+using NRPG.Player;
 using UnityEngine;
 
-public class HealthManaBarController : MonoBehaviour
+namespace NRPG.Core
 {
-    Animator _healthAnim;
-    Animator _manaAnim;
+    public class HealthManaBarController : MonoBehaviour
+    {
+        Animator _healthAnim;
+        Animator _manaAnim;
 
-    PlayerStats _stats;
+        PlayerStats _stats;
 
-    private void Awake() 
-    {
-        Components();
-    }
-    void Components()
-    {
-        _healthAnim=GameObject.Find("HealthBar").GetComponent<Animator>();
-        _manaAnim=GameObject.Find("ManaBar").GetComponent<Animator>();
-        _stats=GameObject.Find("Player").GetComponent<PlayerStats>();
-    }
-    private void Update() 
-    {
-        UpdateManaUI(); UpdateHealthUI();
-    }
-    void UpdateManaUI()
-    {
-        _manaAnim.SetFloat("manaCount",_stats.currentMana);
-    }
-    void UpdateHealthUI()
-    {
-        _healthAnim.SetFloat("healthCount",_stats.currentHealth);
+        private void Awake()
+        {
+            Components();
+        }
+        void Components()
+        {
+            _healthAnim = GameObject.Find("HealthBar").GetComponent<Animator>();
+            _manaAnim = GameObject.Find("ManaBar").GetComponent<Animator>();
+            _stats = GameObject.Find("Player").GetComponent<PlayerStats>();
+        }
+        private void Update()
+        {
+            UpdateManaUI(); UpdateHealthUI();
+        }
+        void UpdateManaUI()
+        {
+            _manaAnim.SetFloat("manaCount", _stats.currentMana);
+        }
+        void UpdateHealthUI()
+        {
+            _healthAnim.SetFloat("healthCount", _stats.currentHealth);
+        }
     }
 }

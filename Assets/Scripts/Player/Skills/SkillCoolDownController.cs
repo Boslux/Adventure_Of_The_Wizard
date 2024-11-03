@@ -3,7 +3,7 @@ using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
-namespace NRPG.UI
+namespace NRPG.Player
 {
     public class SkillCooldownController : MonoBehaviour
     {

@@ -1,7 +1,11 @@
 using System.Collections.Generic;
 
-[System.Serializable]
-public class InventoryData
+namespace NRPG.Core
 {
-    public List<InventoryItemData> items = new List<InventoryItemData>();
+    [System.Serializable]
+    public class InventoryData
+    {
+        public List<InventoryItemData> items = new List<InventoryItemData>();
+    }
+
 }

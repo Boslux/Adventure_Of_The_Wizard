@@ -1,17 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
-public class CameraController : MonoBehaviour
+namespace NRPG.Core
 {
-    Transform target;
-    private void Awake() 
+    public class CameraController : MonoBehaviour
     {
-        target=GameObject.Find("Player").GetComponent<Transform>();    
-    }
-    void Update()
-    {
-        transform.position=target.position;
+        Transform target;
+        private void Awake()
+        {
+            target = GameObject.Find("Player").GetComponent<Transform>();
+        }
+        void Update()
+        {
+            transform.position = target.position;
+        }
     }
 }

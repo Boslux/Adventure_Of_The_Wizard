@@ -1,6 +1,10 @@
+using System;
+using NRPG.Core;
 using UnityEngine;
 
-class PlayerEquipt : MonoBehaviour
+namespace NRPG.Player
+{
+    class PlayerEquipt : MonoBehaviour
 {
     private Weapons currentWeapon; // Şu an kuşanılan silah
     private Armor currentArmor; // Şu an kuşanılan zırh
@@ -60,4 +64,5 @@ class PlayerEquipt : MonoBehaviour
             currentArmor = null; // Artık zırh kuşanılmamış olacak
         }
     }
+}
 }
